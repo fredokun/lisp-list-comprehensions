@@ -73,7 +73,7 @@ Of course, `append` is interesting,  and `map`/`mapcar` too, but mixing the two 
 
 (append-map (lambda (x) (list x (* 10 x))) '(1 2 3 4 5))
 #|
-    ;; => (1 10 2 20 3 30 4 40 5 50)
+    => (1 10 2 20 3 30 4 40 5 50)
 |#
 
 #|

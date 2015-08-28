@@ -1,5 +1,5 @@
 
-# List comprehensions in Lisp (for Python nostalgics ?)
+# List comprehensions in Lisp (tutorial)
 
 ```lisp
 (list-of (cons i j)

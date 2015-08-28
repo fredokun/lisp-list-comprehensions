@@ -7,7 +7,7 @@
 
 My favorite programming languages are undoubtedly *Lisp*s, originally Scheme but todays I enjoy a lot Common Lisp and (a little bit less but still fairly enough) Clojure. I am however quite a polyglot programmer: I taught (and thus used, a lot) Java for several years. And at work I program a lot in Ocaml and Python for work. 
 
-There's no programming language that I really hate (except VB) or love (except Lisp). Let's take for example Python: not efficient, full of what I think are ill-designed constructs (e.g. `lambda`, also the lexical bindings) but clearly usable. One feature I use a lot in Python is the *comprehensions*.  There are comprehension expressions for building lists, sets, dictionaries and (perhaps most interestingly) generators. Today I will only discuss the case of *list comprehensions* because ... I think that's an interesting topic.
+There's no programming language that I really hate (except VB) or love (except Lisp). Let's take for example Python: not efficient, full of what I think are ill-designed constructs (e.g. `lambda`, also the lexical bindings) but clearly usable. One feature I use a lot in Python is the *comprehensions*.  There are comprehension expressions for building lists, sets, dictionaries and (perhaps most interestingly) generators. Today I will only discuss the case of *list comprehensions* because ... I think that's an interesting topic to begin with.
 
 A simple list comprehension expression is written as follows in Python:
 
@@ -15,12 +15,12 @@ A simple list comprehension expression is written as follows in Python:
 [ <expr> for <var> in <list> ]
 ```
 
-This reads: "build the list of <expr> in which the occurrences of <var> are replaced in turn by
-the successive elements of the source <list>."
+This reads: "build the list of `<expr>` in which the occurrences of `<var>` are replaced in turn by
+the successive elements of the source `<list>`."
 
 Note that the source of the comprehension can be something else than a list (it can be an *iterable* or a generator) but we will mostly consider the case for lists (although we will make some remarks about this aspect at the end).
 
-**Remark**: the functional programming language Haskell has a similar syntactic construct, and so does Clojure.
+**Remark**: the functional programming language Haskell has a similar syntactic construct, and so does Clojure (cf. the `for` macro).
 
 Let's see some examples of Python comprehensions.
 
@@ -52,11 +52,11 @@ So, our objective will be to find a few ways to provide list comprehensions to C
 
 #|
 
-## The list monad
+## The List monad
 
 No no no! This is not a tutorial about monads!  But please don't hate monads or other interesting design patterns of functional programming languages. There's some beauty in the concept, and I will try to convey this beauty by considering one of the simplest case: the *list monad*.
 
-The fundamental operator that we are concerned with is a function that does not look as useful as we might think: `append-map`.
+The fundamental operator that we are concerned with is a function that does not look *that* useful: `append-map`.
 
 |#
 
@@ -78,7 +78,13 @@ Of course, `append` is interesting,  and `map`/`mapcar` too, but mixing the two 
 
 #|
 
-The type of this function is something like `(a -> L a) * L a -> L a`  where we interpret `L a` as  "a `L`ist of `a`'s". Not that I want to for you to think in types, but we need at least an intuitive understanding of the types of our functions, right ?
+The type of this function is something like this:
+
+```
+(a -> L a) * L a -> L a
+```  
+
+where we interpret `L a` as  "a `L`ist of `a`'s". Not that I want to for you to think in types, but we need at least an intuitive understanding of the types of our functions, right ?
 
 The first and most famous monadic combinator is called `bind` and in the case of the list monad it is almost a synonymous for `append-map`. 
 
@@ -90,7 +96,7 @@ The first and most famous monadic combinator is called `bind` and in the case of
 
 #|
 
-**Remark**: for a monad `M` the type of `bind` is `M a * (a -> M a) -> M a`.  It's good to know even if we will only consider the list monad `L`.
+**Remark**: for a monad `M` the type of `bind` is `M a * (a -> M a) -> M a`.  It's good to know even if we will only consider the list monad `L` today.
 
 |#
 
@@ -124,12 +130,14 @@ And now something a little bit more involved.
 
 |#
 
-(list-bind '(1 2 3 4)
-           (lambda (x) (list-bind '(A B)
-                                  (lambda (y) (list-return (cons x y))))))
+(list-bind
+ '(1 2 3 4)
+ (lambda (x) (list-bind
+              '(A B)
+              (lambda (y) (list-return (cons x y))))))
 
 #|
-    => ((1 . A) (1 . B) (2 . A) (2 . B) (3 . A) (3 . B) (4 . A) (4 . B) (5 . A) (5 . B))
+    => ((1 . A) (1 . B) (2 . A) (2 . B) (3 . A) (3 . B) (4 . A) (4 . B))
 |#
 
 #|
@@ -166,10 +174,10 @@ And now we can write e.g.:
 ## The do notation
 
 If we compare to the comprehension expressions of Python or Haskell, we can probably say
- that using directly the combinators `bind`, `return` and `fail`  (specialized
- for lists) is more explicit but less elegant.
+ that using directly the combinators `bind`, `return` and `fail` is on the one
+ hand more explicit but on the other hand less elegant.
 
-Haskell provides a `do` notation that greatly improves the monadic combinations. In fact,
+Haskell provides a `do` notation that greatly improves the readability of monadic combinations. In fact,
  monads (and their relatives functors and applicatives) are mostly about plumbing, as
  we can see with the examples above.
  The do notation allows to hide and reorganize some of this plumbing.
@@ -250,11 +258,12 @@ Let's see another (and please be reassured "un-monadic") way...
 
 Instead of building on basic functions -- the Monad way -- we can
 build our list comprehensions on higher-level abstractions.  In plain
-Common Lisp, the `loop` macro (should be called the `loop` DSL) is a
-good candidate. For `loop`-haters I would recommend porting the code
-below to the more Lispy and undoubtedly (even) more powerful `iterate`
+Common Lisp, the `loop` macro is a
+good candidate. For `loop`-*haters* I would recommend porting the code
+below to the more *lispy* and undoubtedly (even) more powerful `iterate`
 macro (that you'll find on quicklisp of course).  But let's stick with
-`loop` that already provides everything we need (and more !).
+`loop` that already provides everything we need (and more !). If you
+ need a loop refresher, please consult [the excellent Practical Common Lisp](http://www.gigamonkeys.com/book/loop-for-black-belts.html).
 
 So, how would we write the list of squares in loop ? Easy !
 
@@ -268,7 +277,7 @@ So, how would we write the list of squares in loop ? Easy !
 
 #|
 
-For the nested comprehensions, the `append` clause is our friend.
+For nested comprehensions, the `append` clause is our friend.
 
 |#
 
@@ -299,7 +308,7 @@ By looking at these examples, we might say that list comprehension expressions a
  readable and efficient (probably more so than using the list monad).
 
 However, the loop syntax is complex and it is still useful to provide a simpler
-abstraction for list comprehensions. Moreover, we can exploit various loop features
+abstraction *exclusively* for list comprehensions. Moreover, we can exploit various loop features
  to enrich our comprehension framework.
 
 |#
@@ -331,7 +340,14 @@ The following transformer manages to extract this first clause from a `list-of` 
      (values `(for ,(cadr expr) ,(caddr expr) ,(cadddr expr)) (cddddr expr)))
 	(t (error "First 'for' clause missing in comprehension."))))
 
-(transform-first-clause '(for i in '(1 2 3 4 5) for j in '(A B) for k across "Hello"))
+#|
+
+For example:
+
+|#
+
+(transform-first-clause
+ '(for i in '(1 2 3 4 5) for j in '(A B) for k across "Hello"))
 #|
     => (FOR I IN '(1 2 3 4 5))     ; the extracted clause as a first value
     => (FOR J IN '(A B) FOR K ACROSS "Hello")  ; the remaining clauses as a second value
@@ -349,8 +365,7 @@ Now we write a second transformer for all the remaining clauses. The supported c
   - the `with` clause to fix a temporary variable  (`with <var> = <expr>` corresponds to `loop`'s 
 `for <var> = <expr>`)
 
-  - other intresting `loop` clauses: `when` for filtering, `until` for early terminations, and  `with` for
-    temporary variables.
+  - other intresting `loop` clauses: `when` for filtering and `until` for early terminations (do you see something else ?).
 
 Note that this transformer is not very robust (with many cadd...r's),
 but adding all the error cases would make the code less readable I guess. For the real thing I would
@@ -374,6 +389,12 @@ strongly recommand using the `optima` pattern matcher.
         ((eq-keyword (car expr) "FOR")
          (values :FOR `(for ,(cadr expr) ,(caddr expr) ,(cadddr expr)) (cddddr expr)))
         (t (error "Expecting 'and', 'for', 'when' or 'until' in comprehension."))))) 
+
+#|
+
+A few examples:
+
+|#
 
 (transform-clause '())
 #|
@@ -574,7 +595,7 @@ First, we found two different ways to provide *list comprehensions* in Common Li
  his destiny at hand and introduce the feature he wants *the way* he wants it !
 
 Another take away is that monadic thinking is useful, even if you must
- be able to go beyond the type-based pluming they propose... In a way
+ be able to go beyond the type-based plumbing they propose... In a way
  monads are a kind of well-typed-although-limited macros. Simply relying on the powerful
 `loop` mini-language allowed us to go beyond simple comprehensions (especially with the `until` clause).
 

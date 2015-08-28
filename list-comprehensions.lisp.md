@@ -700,6 +700,15 @@ Another take away is that monadic thinking is useful, even if you must
  monads are a kind of well-typed-although-limited macros. Simply relying on the powerful
 `loop` mini-language allowed us to go beyond simple comprehensions (especially with the `until` clause).
 
+If compared to comprehension expressions found in other languages, it is not a bad start.
+ Thanks to `loop` we can take different sources: lists (with `in`), strings (with `across`), etc.
+ There would be some (simple) work to support more collections such as hashtables.  Perhaps a better
+ thing would be to base our macro on `iterate` since the latter is extensible.
+
+Finally, Python also has set, dictionnary comprehensions as well as generator expressions (actually
+closer to Clojure's sequence comprehensions).  This goes beyond our `list-of` macro but it is 
+a topic I do intend to further study.
+
 And that's it for today...
 
 

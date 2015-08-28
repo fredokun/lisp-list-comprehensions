@@ -125,7 +125,7 @@ Let's start slowly:
            (lambda (x) (list-return (* x x))))
 ```
 
-    ;; => (1 4 9 16 25)
+    => (1 4 9 16 25)
 
 
 
@@ -141,7 +141,7 @@ And now something a little bit more involved.
 
 ```
 
-    ;; => ((1 . A) (1 . B) (2 . A) (2 . B) (3 . A) (3 . B) (4 . A) (4 . B) (5 . A) (5 . B))
+    => ((1 . A) (1 . B) (2 . A) (2 . B) (3 . A) (3 . B) (4 . A) (4 . B) (5 . A) (5 . B))
 
 
 
@@ -167,7 +167,7 @@ And now we can write e.g.:
 
 ```
 
-    ;; => (2 4 6 8)
+    => (2 4 6 8)
 
 
 ```lisp
@@ -176,7 +176,7 @@ And now we can write e.g.:
 
 ```
 
-    ;; => (1 3 5 7)
+    => (1 3 5 7)
 
 
 
@@ -226,7 +226,7 @@ And now we can write:
   yield (* i i))
 ```
 
-    ;; => (1 4 9 16 25)
+    => (1 4 9 16 25)
 
 
 ```lisp
@@ -236,7 +236,7 @@ And now we can write:
   yield (cons i j))
 ```
 
-    ;; => ((1 . A) (1 . B) (2 . A) (2 . B) (3 . A) (3 . B) (4 . A) (4 . B))
+    => ((1 . A) (1 . B) (2 . A) (2 . B) (3 . A) (3 . B) (4 . A) (4 . B))
 
 
 ```lisp
@@ -246,7 +246,7 @@ And now we can write:
   yield i)
 ```
 
-    ;; => (2 4 6 8)
+    => (2 4 6 8)
 
 
 ```lisp
@@ -256,7 +256,7 @@ And now we can write:
   yield i)
 ```
 
-    ;; => (1 3 5 7)
+    => (1 3 5 7)
 
 
 
@@ -291,7 +291,7 @@ So, how would we write the list of squares in loop ? Easy !
    collect (* i i))
 ```
 
-    ;; => (1 4 9 16 25)
+    => (1 4 9 16 25)
 
 
 
@@ -306,7 +306,7 @@ For the nested comprehensions, the `append` clause is our friend.
              collect (cons i j)))
 ```
 
-    ;; => ((1 . A) (1 . B) (2 . A) (2 . B) (3 . A) (3 . B) (4 . A) (4 . B))
+    => ((1 . A) (1 . B) (2 . A) (2 . B) (3 . A) (3 . B) (4 . A) (4 . B))
 
 
 
@@ -321,7 +321,7 @@ Filtering is also easy with the `when` clause.
    collect i)
 ```
 
-    ;; => (2 4 6 8)
+    => (2 4 6 8)
 
 
 
@@ -367,8 +367,8 @@ The following transformer manages to extract this first clause from a `list-of` 
 (transform-first-clause '(for i in '(1 2 3 4 5) for j in '(A B) for k across "Hello"))
 ```
 
-    ;; => (FOR I IN '(1 2 3 4 5))     ; the extracted clause as a first value
-    ;; => (FOR J IN '(A B) FOR K ACROSS "Hello")  ; the remaining clauses as a second value
+    => (FOR I IN '(1 2 3 4 5))     ; the extracted clause as a first value
+    => (FOR J IN '(A B) FOR K ACROSS "Hello")  ; the remaining clauses as a second value
 
 
 
@@ -413,16 +413,16 @@ strongly recommand using the `optima` pattern matcher.
 (transform-clause '())
 ```
 
-    ;; => :END ,  NIL,  NIL
+    => :END ,  NIL,  NIL
 
 
 ```lisp
 (transform-clause '(and i in '(1 2 3 4) for j in '(A B) collect i))
 ```
 
-    ;; => :AND                   ; the kind of clause as a first value
-    ;; => (FOR I IN '(1 2 3 4))  ; the clause content as a second value
-    ;; => (FOR J IN '(A B) COLLECT I)  ; the remaining clauses as a last value
+    => :AND                   ; the kind of clause as a first value
+    => (FOR I IN '(1 2 3 4))  ; the clause content as a second value
+    => (FOR J IN '(A B) COLLECT I)  ; the remaining clauses as a last value
 
 
 
@@ -446,9 +446,9 @@ comprehensions injects the *`loop`-within-`append`* expression.
 (list-of-transformer '(cons i j) '(with k = i and i in '(1 2 3 4) for j in '(A B)))
 ```
 
-    ;; => (FOR K = I FOR I IN '(1 2 3 4) APPEND
-            (LOOP FOR J IN '(A B)
-                  COLLECT (CONS I J)))
+    => (FOR K = I FOR I IN '(1 2 3 4) APPEND
+         (LOOP FOR J IN '(A B)
+               COLLECT (CONS I J)))
 
 
 
@@ -477,15 +477,15 @@ Now let's see somme expansions... we'll also check that things
 (macroexpand-1 '(list-of (* i i) for i in '(1 2 3 4 5)))
 ```
 
-    ;; => (LOOP FOR I IN '(1 2 3 4 5)
-                COLLECT (* I I))
+    => (LOOP FOR I IN '(1 2 3 4 5)
+             COLLECT (* I I))
 
 
 ```lisp
 (list-of (* i i) for i in '(1 2 3 4 5))
 ```
 
-    ;; => (1 4 9 16 25)
+    => (1 4 9 16 25)
 
 
 
@@ -501,10 +501,10 @@ Let's try the `with` clause (and see that it is expanded to
                  and j in '(1 2 3 4 5) with k = (+ i j)))
 ```
 
-    ;; => (LOOP FOR I IN '(1 2 3 4 5)
-                FOR J IN '(1 2 3 4 5)
-                FOR K = (+ I J)
-                COLLECT K)
+    => (LOOP FOR I IN '(1 2 3 4 5)
+             FOR J IN '(1 2 3 4 5)
+             FOR K = (+ I J)
+             COLLECT K)
 
 
 ```lisp
@@ -513,7 +513,7 @@ Let's try the `with` clause (and see that it is expanded to
            with k = (+ i j))
 ```
 
-    ;; => (2 4 6 8 10)
+    => (2 4 6 8 10)
 
 
 
@@ -529,7 +529,7 @@ Filtering with `when` of course works.
   when (evenp i))
 ```
 
-    ;; => (2 4 6 8)
+    => (2 4 6 8)
 
 
 
@@ -539,7 +539,7 @@ Filtering with `when` of course works.
   when (oddp i))
 ```
 
-    ;; => (1 3 5 7)
+    => (1 3 5 7)
 
 
 
@@ -554,9 +554,9 @@ The nesting of comprehensions yields nested loops as expected.
                  for j in '(A B)))
 ```
 
-    ;; => (LOOP FOR I IN '(1 2 3 4)
-                APPEND (LOOP FOR J IN '(A B)
-                             COLLECT (CONS I J)))
+    => (LOOP FOR I IN '(1 2 3 4)
+             APPEND (LOOP FOR J IN '(A B)
+                          COLLECT (CONS I J)))
 
 
 ```lisp
@@ -565,7 +565,7 @@ The nesting of comprehensions yields nested loops as expected.
   for j in '(A B))
 ```
 
-    ;; => ((1 . A) (1 . B) (2 . A) (2 . B) (3 . A) (3 . B) (4 . A) (4 . B))
+    => ((1 . A) (1 . B) (2 . A) (2 . B) (3 . A) (3 . B) (4 . A) (4 . B))
 
 
 
@@ -581,7 +581,7 @@ To illustrate the `until` clause let's stop a little bit earlier.
   for j in '(A B))
 ```
 
-    ;; => ((1 . A) (1 . B) (2 . A) (2 . B))
+    => ((1 . A) (1 . B) (2 . A) (2 . B))
 
 
 
@@ -597,9 +597,9 @@ It is to be compared with parallel comprehensions, as in the following example.
                  and j in '(A B)))
 ```
 
-    ;; => (LOOP FOR I IN '(1 2 3 4)
-                FOR J IN '(A B)
-                COLLECT (CONS I J))
+    => (LOOP FOR I IN '(1 2 3 4)
+             FOR J IN '(A B)
+             COLLECT (CONS I J))
 
 
 
@@ -609,7 +609,7 @@ It is to be compared with parallel comprehensions, as in the following example.
   and j in '(A B))
 ```
 
-    ;; => ((1 . A) (2 . B))
+    => ((1 . A) (2 . B))
 
 
 

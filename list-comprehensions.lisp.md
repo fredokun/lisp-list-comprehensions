@@ -20,85 +20,29 @@ the successive elements of the source <list>."
 
 Note that the source of the comprehension can be something else than a list (it can be an *iterable* or a generator) but we will mostly consider the case for lists (although we will make some remarks about this aspect at the end).
 
-The functional programming language Haskell has a similar syntactic construct:
+**Remark**: the functional programming language Haskell has a similar syntactic construct, and so does Clojure.
 
-```
-[ <expr> | <var> <- <list> ]
-```
-
-And finally Clojure has a related *sequence comprehensions* (and although it is incorrect, we will unify
-clojure sequences and lists in this document).
-
-```
-(for [<var> <list>]
-   <expr>)
-```
-
-For example:
+Let's see some examples of Python comprehensions.
 
 ```python
-[i*i for i in [1, 2, 3, 4, 5]]
-```
-(in Python)
-
-```haskell
-[i*i | i <- [1, 2, 3, 4, 5]]
-```
-(in Haskell)
-
-```clojure
-(for [i '(1 2 3 4 5)] (* i i))
-```
-(in Clojure)
-
-yield the list:
-
-```
+>>> [i*i for i in [1, 2, 3, 4, 5]]
 [1, 4, 9, 16, 25]
 ```
 
 Comprehensions can also nest, performing a kind of *cartesian product*, e.g.:
 
 ```python
-[(i, j) for i in [1, 2, 3, 4]
-         for j in ['A', 'B']]
+>>> [(i, j) for i in [1, 2, 3, 4]
+            for j in ['A', 'B']]
+[(1, 'A'), (1, 'B'), (2, 'A'), (2, 'B'), (3, 'A'), (3, 'B'), (4, 'A'), (4, 'B')]
 ```
-(in Python)
-
-```haskell
-[(i, j) | i <- [1, 2, 3, 4],
-          j <- ['A', 'B']]
-```
-(in Haskell)
-
-```clojure
-(for [i [1, 2, 3, 4]
-      j ["A", "B"]] 
-  (cons i j)])
-```
-(in Clojure)
-
-give: `[(1, 'A'), (1, 'B'), (2, 'A'), (2, 'B'), (3, 'A'), (3, 'B'), (4, 'A'), (4, 'B')]`
 
 It is also possible to filter the elements:
 
 ```python
-[i for i in [1, 2, 3, 4, 5, 6, 7, 8] if i % 2 == 0]
+>>> [i for i in [1, 2, 3, 4, 5, 6, 7, 8] if i % 2 == 0]
+[2, 4, 6, 8]
 ```
-(in Python)
-
-```haskell
-[i | i <- [1, 2, 3, 4, 5, 6, 7, 8], i % 2 == 0]
-```
-(in Haskell)
-
-```clojure
-(for [i [1, 2, 3, 4, 5, 6, 7, 8]] :when (even? i)])
-```
-(in Clojure)
-
-yield: `[2, 4, 6, 8]`
-
 You know that already, but Common Lisp does not provide *list comprehension expressions*. However, the programmable programming language is never short of macro-based solutions for "missing" constructs!
 
 So, our objective will be to find a few ways to provide list comprehensions to Common Lisp.
@@ -133,7 +77,7 @@ Of course, `append` is interesting,  and `map`/`mapcar` too, but mixing the two 
 (append-map (lambda (x) (list x (* 10 x))) '(1 2 3 4 5))
 ```
 
-    ;; => (1 10 2 20 3 30 4 40 5 50)
+    => (1 10 2 20 3 30 4 40 5 50)
 
 
 

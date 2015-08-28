@@ -272,7 +272,7 @@ Let's see another (and please be reassured "un-monadic") way...
 
 
 
- ## The Loop way to comprehensions
+## The Loop way to comprehensions
 
 Instead of building on basic functions -- the Monad way -- we can
 build our list comprehensions on higher-level abstractions.  In plain
@@ -338,7 +338,7 @@ abstraction for list comprehensions. Moreover, we can exploit various loop featu
 
 
 
-  ## The `list-of` macro for list comprehensions
+## The `list-of` macro for list comprehensions
 
 We now reach the final stage of our exploration of list comprehensions. We will build
  a (relatively) simple macro named `list-of` that will macroexpand to `loop` expressions.
@@ -631,7 +631,7 @@ And the last one is left as en excercise.
 ```
 
 
-  ## Conclusion
+## Conclusion
 
 > So what did we achieve ?
 

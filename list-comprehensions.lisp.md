@@ -208,8 +208,10 @@ This is a straightforward macro in Common Lisp.
     ((null (cdr body)) (car body))
     ((eq-keyword (cadr body) "<-")
      `(list-bind ,(caddr body) (lambda (,(car body)) (do-list ,@(cdddr body)))))
-    ((eq-keyword (car body) "WHEN") `(if ,(cadr body) (do-list ,@(cddr body)) (list-fail)))
-    ((eq-keyword (car body) "YIELD") `(list-return ,(cadr body)))
+    ((eq-keyword (car body) "WHEN")
+     `(if ,(cadr body) (do-list ,@(cddr body)) (list-fail)))
+    ((eq-keyword (car body) "YIELD")
+     `(list-return ,(cadr body)))
     (t (error "Not a do-able expression: ~S" `(quote ,body)))))
 
 ```

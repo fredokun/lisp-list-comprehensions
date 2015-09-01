@@ -69,7 +69,7 @@ The fundamental operator that we are concerned with is a function that does not 
 ```
 
 
-Of course, `append` is interesting,  and `map`/`mapcar` too, but mixing the two does not look extremely useful. Alghouth this works, for example:
+Of course, `append` is interesting,  and `map`/`mapcar` too, but mixing the two does not look extremely useful. Although this works, for example:
 
 
 

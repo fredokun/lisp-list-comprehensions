@@ -5,7 +5,7 @@
 
 > This document is (C) Frédéric Peschanski  CC-BY-SA 3.0
 
-My favorite programming languages are undoubtedly *Lisp*s, originally Scheme but todays I enjoy a lot Common Lisp and (a little bit less but still fairly enough) Clojure. I am however quite a polyglot programmer: I taught (and thus used, a lot) Java for several years. And at work I program a lot in Ocaml and Python for work. 
+My favorite programming languages are undoubtedly *Lisp*s, originally Scheme but todays I enjoy a lot Common Lisp and (a little bit less but still fairly enough) Clojure. I am however quite a polyglot programmer: I taught (and thus used, a lot) Java for several years. And at work I program a lot in Ocaml and Python (but that's *not* for fun). 
 
 There's no programming language that I really hate (except VB) or love (except Lisp). Let's take for example Python: not efficient, full of what I think are ill-designed constructs (e.g. `lambda`, also the lexical bindings) but clearly usable. One feature I use a lot in Python is the *comprehensions*.  There are comprehension expressions for building lists, sets, dictionaries and (perhaps most interestingly) generators. Today I will only discuss the case of *list comprehensions* because ... I think that's an interesting topic to begin with.
 
@@ -54,7 +54,7 @@ So, our objective will be to find a few ways to provide list comprehensions to C
 
 ## The List monad
 
-No no no! This is not a tutorial about monads!  But please don't hate monads or other interesting design patterns of functional programming languages. There's some beauty in the concept, and I will try to convey this beauty by considering one of the simplest case: the *list monad*.
+No no no! This is not *yet another monad tutorial* (tm)!  But please don't hate monads or other interesting design patterns of functional programming languages. There's some beauty in the concept, and I will try to convey this beauty by considering one of the simplest case: the *list monad*.
 
 The fundamental operator that we are concerned with is a function that does not look *that* useful: `append-map`.
 
@@ -84,7 +84,7 @@ The type of this function is something like this:
 (a -> L a) * L a -> L a
 ```  
 
-where we interpret `L a` as  "a `L`ist of `a`'s". Not that I want to for you to think in types, but we need at least an intuitive understanding of the types of our functions, right ?
+where we interpret `L a` as  "a `L`ist of `a`'s". Not that I want to force you thinking in types, but we need at least an intuitive understanding of the types of our functions, right ?
 
 The first and most famous monadic combinator is called `bind` and in the case of the list monad it is almost a synonymous for `append-map`. 
 
@@ -173,7 +173,7 @@ And now we can write e.g.:
 
 ## The do notation
 
-If we compare to the comprehension expressions of Python or Haskell, we can probably say
+If we compare to the comprehension expressions of Python, we can probably say
  that using directly the combinators `bind`, `return` and `fail` is on the one
  hand more explicit but on the other hand less elegant.
 
@@ -186,8 +186,8 @@ This is a straightforward macro in Common Lisp.
 
 |#
 
-;; a permissive equality for keywords in constructs (e.g. when or :when)
-(defun eq-keyword (kw str)
+;; a very permissive recognizer for "symbols"
+(defun is-sym (kw str)
   (and (symbolp kw)
        (string= (symbol-name kw) str)))
 
@@ -195,11 +195,11 @@ This is a straightforward macro in Common Lisp.
   (cond 
     ((null body) (progn))
     ((null (cdr body)) (car body))
-    ((eq-keyword (cadr body) "<-")
+    ((is-sym (cadr body) "<-")
      `(list-bind ,(caddr body) (lambda (,(car body)) (do-list ,@(cdddr body)))))
-    ((eq-keyword (car body) "WHEN")
+    ((is-sym (car body) "WHEN")
      `(if ,(cadr body) (do-list ,@(cddr body)) (list-fail)))
-    ((eq-keyword (car body) "YIELD")
+    ((is-sym (car body) "YIELD")
      `(list-return ,(cadr body)))
     (t (error "Not a do-able expression: ~S" `(quote ,body)))))
 
@@ -260,8 +260,8 @@ Instead of building on basic functions -- the Monad way -- we can
 build our list comprehensions on higher-level abstractions.  In plain
 Common Lisp, the `loop` macro is a
 good candidate. For `loop`-*haters* I would recommend porting the code
-below to the more *lispy* and undoubtedly (even) more powerful `iterate`
-macro (that you'll find on quicklisp of course).  But let's stick with
+below to the more *lispy* and undoubtedly (even) more powerful [iterate](https://common-lisp.net/project/iterate/)
+ macro (that you'll find on [quicklisp](https://www.quicklisp.org/beta/) of course).  But let's stick with
 `loop` that already provides everything we need (and more !). If you
  need a loop refresher, please consult [the excellent Practical Common Lisp](http://www.gigamonkeys.com/book/loop-for-black-belts.html).
 
@@ -304,7 +304,7 @@ Filtering is also easy with the `when` clause.
 #|
 
 By looking at these examples, we might say that list comprehension expressions are
- not really need in Common Lisp since the corresponding `loop` expressions are both
+ not really needed in Common Lisp since the corresponding `loop` expressions are both
  readable and efficient (probably more so than using the list monad).
 
 However, the loop syntax is complex and it is still useful to provide a simpler
@@ -336,7 +336,7 @@ The following transformer manages to extract this first clause from a `list-of` 
 (defun transform-first-clause (expr)
   (cond
     ((null expr) (error "Empty comprehension: missing first 'for' clause"))
-	((eq-keyword (car expr) "FOR")
+	((is-sym (car expr) "FOR")
      (values `(for ,(cadr expr) ,(caddr expr) ,(cadddr expr)) (cddddr expr)))
 	(t (error "First 'for' clause missing in comprehension."))))
 
@@ -378,15 +378,15 @@ strongly recommand using the `optima` pattern matcher.
   (if (null expr)
       (values :END '() '())
       (cond
-        ((eq-keyword (car expr) "AND")
+        ((is-sym (car expr) "AND")
          (values :AND `(for ,(cadr expr) ,(caddr expr) ,(cadddr expr)) (cddddr expr)))
-        ((eq-keyword (car expr) "WHEN")
+        ((is-sym (car expr) "WHEN")
          (values :WHEN `(when ,(cadr expr)) (cddr expr)))
-        ((eq-keyword (car expr) "UNTIL")
+        ((is-sym (car expr) "UNTIL")
          (values :UNTIL `(until ,(cadr expr)) (cddr expr)))
-        ((eq-keyword (car expr) "WITH")
+        ((is-sym (car expr) "WITH")
          (values :WITH `(for ,(cadr expr) ,(caddr expr) ,(cadddr expr)) (cddddr expr)))
-        ((eq-keyword (car expr) "FOR")
+        ((is-sym (car expr) "FOR")
          (values :FOR `(for ,(cadr expr) ,(caddr expr) ,(cadddr expr)) (cddddr expr)))
         (t (error "Expecting 'and', 'for', 'when' or 'until' in comprehension."))))) 
 

@@ -599,8 +599,8 @@ The nesting of comprehensions yields nested loops as expected.
 ```
 
     => (LOOP FOR I IN '(1 2 3 4)
-             APPEND (LOOP FOR J IN '(A B)
-                          COLLECT (CONS I J)))
+             NCONC (LOOP FOR J IN '(A B)
+                         COLLECT (CONS I J)))
 
 
 ```lisp

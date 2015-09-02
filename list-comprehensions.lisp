@@ -535,8 +535,8 @@ The nesting of comprehensions yields nested loops as expected.
                  for j in '(A B)))
 #|
     => (LOOP FOR I IN '(1 2 3 4)
-             APPEND (LOOP FOR J IN '(A B)
-                          COLLECT (CONS I J)))
+             NCONC (LOOP FOR J IN '(A B)
+                         COLLECT (CONS I J)))
 |#
 
 (list-of (cons i j)

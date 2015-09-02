@@ -67,7 +67,7 @@ The fundamental operator that we are concerned with is a function that does not 
 
 #|
 
-Of course, `append` is interesting,  and `map`/`mapcar` too, but mixing the two does not look extremely useful. Alghouth this works, for example:
+Of course, `append` is interesting,  and `map`/`mapcar` too, but mixing the two does not look extremely useful (as pointed out by `lispm@reddit/lisp` a similar function is called `mappend` in [alexandria](https://common-lisp.net/project/alexandria/)). Anyway the function works as expected, for example:
 
 |#
 
@@ -290,6 +290,21 @@ For nested comprehensions, the `append` clause is our friend.
 
 #|
 
+**Remark**: `Aidenn0@reddit/lisp` tells me quite rightly that instead of the "constructive" `append` we
+can use the "destructive" `nconc` since the inner `collect` clause generates a fresh
+ list. So we have an even better friend since `nconc`-ing is much more efficient.
+
+|#
+
+(loop for i in '(1 2 3 4)
+   nconc (loop for j in '(A B)
+             collect (cons i j)))
+#|
+    => ((1 . A) (1 . B) (2 . A) (2 . B) (3 . A) (3 . B) (4 . A) (4 . B))
+|#
+
+#|
+
 Filtering is also easy with the `when` clause.
 
 |#
@@ -412,7 +427,7 @@ A few examples:
 
 Now we can write the main transformer, that simply recurse
  on the clause transformer above. The case for the nested
-comprehensions injects the *`loop`-within-`append`* expression.
+comprehensions injects the *`loop`-within-`nconc`* expression.
  But everything is otherwise rather straightforward.
 
 |#
@@ -423,7 +438,7 @@ comprehensions injects the *`loop`-within-`append`* expression.
     (case kind
       (:END `(collect ,what))
       ((:AND :WHEN :UNTIL :WITH) (append next (list-of-transformer what rexpr)))
-      (:FOR `(append (loop ,@next ,@(list-of-transformer what rexpr)))))))
+      (:FOR `(nconc (loop ,@next ,@(list-of-transformer what rexpr)))))))
 
 (list-of-transformer '(cons i j) '(with k = i and i in '(1 2 3 4) for j in '(A B)))
 #|
@@ -609,5 +624,9 @@ closer to Clojure's sequence comprehensions).  This goes beyond our `list-of` ma
 a topic I do intend to further study.
 
 And that's it for today...
+
+## Discussion
+
+cf. the [reddit/lisp comments](https://www.reddit.com/r/lisp/comments/3j7zyt/list_comprehensions_in_common_lisp_tutorial/)
 
 |#

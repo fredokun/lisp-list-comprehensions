@@ -5,7 +5,7 @@
 
 > This document is (C) Frédéric Peschanski  CC-BY-SA 3.0
 
-My favorite programming languages are undoubtedly *Lisp*s, originally Scheme but todays I enjoy a lot Common Lisp and (a little bit less but still fairly enough) Clojure. I am however quite a polyglot programmer: I taught (and thus used, a lot) Java for several years. And at work I program a lot in Ocaml and Python (but that's *not* for fun). 
+My favorite programming languages are undoubtedly *Lisp*s, originally Scheme but todays I enjoy a lot coding in Common Lisp and Clojure. I am however quite a polyglot programmer: I taught (and thus used, a lot) Java for several years. And at work I program a lot in Ocaml and Python (but that's *not* for fun). 
 
 There's no programming language that I really hate (except VB) or love (except Lisp). Let's take for example Python: not efficient, full of what I think are ill-designed constructs (e.g. `lambda`, also the lexical bindings) but clearly usable. One feature I use a lot in Python is the *comprehensions*.  There are comprehension expressions for building lists, sets, dictionaries and (perhaps most interestingly) generators. Today I will only discuss the case of *list comprehensions* because ... I think that's an interesting topic to begin with.
 
